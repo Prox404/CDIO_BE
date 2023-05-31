@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User/User');
 const UserToken = require('../models/UserToken/UserToken');
 const jwt = require('jsonwebtoken');
+const { listenerCount } = require('../models/Cart/Cart');
 
 class UserController {
 
@@ -32,11 +33,16 @@ class UserController {
     }
 
     async signup(req, res) {
-        const body = req.body;
-        if (!(body.email && body.password && body.username)) {
+        let {email, password, username, fullname, phone, address} = req.body;
+        if (!(email && password && username)) {
             return res.status(400).send({ error: "Data not formatted properly" });
         }
-        const user = new User(body);
+
+        fullname = fullname ? fullname : null;
+        phone = phone ? phone : null;
+        address = address ? address : null;
+
+        const user = new User({ email, password, username, fullname, phone, address });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
         try {
@@ -70,9 +76,8 @@ class UserController {
         }
         try {
             const user = jwt.verify(refreshToken, process.env.TOKEN_SECRET);
-            const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 });
             await UserToken.deleteOne({ userId: user._id, token: refreshToken });
-            res.status(200).send({ accessToken });
+            res.status(200).send({ message: "User logged out" });
         } catch (error) {
             console.error(error);
             res.status(400).send({ error });
