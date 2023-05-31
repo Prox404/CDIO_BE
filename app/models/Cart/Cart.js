@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const OrderSchema = new Schema({
     user: {type: Schema.Types.ObjectId,ref: 'User', required: true},
-    product: {type: [new Schema({
+    products: {type: [new Schema({
         product: { type: Schema.Types.ObjectId,ref: 'Product', required: true },
         quantity: { type: Number, required: true },
     })], required: true},
@@ -11,4 +11,4 @@ const OrderSchema = new Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('Order', OrderSchema);
+module.exports = mongoose.model('Cart', OrderSchema);
