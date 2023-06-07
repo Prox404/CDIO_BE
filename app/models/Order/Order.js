@@ -14,6 +14,7 @@ const OrderSchema = new Schema({
     total: { type: Number, required: true},
     note: { type: String, required: true},
     orderDate: { type: Date, required: true},
+    transportFee: { type: Number, default: 0},
 }, {
     timestamps: true,
 });

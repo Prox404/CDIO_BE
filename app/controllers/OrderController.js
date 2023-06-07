@@ -5,7 +5,7 @@ const User = require('../models/User/User');
 class OrderController {
     async AddOrder(req, res) {
         try {
-            const { userId, products, address, phone, note } = req.body;
+            const { userId, products, address, phone, note, transportFee } = req.body;
             console.log(req.body); 
 
             // Kiểm tra sự tồn tại của người dùng
@@ -54,6 +54,7 @@ class OrderController {
                 phone: phone,
                 total: total,
                 note: note,
+                transportFee: transportFee || 0,
                 orderDate: new Date(),
             });
 
