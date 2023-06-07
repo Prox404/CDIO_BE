@@ -105,7 +105,7 @@ class ProductController {
         }
 
         if (category) {
-            searchCriteria.category = category; // Tìm kiếm theo danh mục
+            searchCriteria.category = { $regex: category }; // Tìm kiếm theo danh mục
         }
 
         if (priceFrom && priceTo) {
