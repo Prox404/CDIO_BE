@@ -12,6 +12,7 @@ class ProductController {
                 description,
                 image,
                 category,
+                discount,
             });
 
             const savedProduct = await newProduct.save();
@@ -58,7 +59,7 @@ class ProductController {
             const { name, price, quantity, description, image, category, discount } = req.body;
 
             const product = await Product.findById(req.params.id);
-
+            
             product.name = name || product.name;
             product.price = price || product.price;
             product.quantity = quantity || product.quantity;
@@ -66,6 +67,7 @@ class ProductController {
             product.image = image || product.image;
             product.category = category || product.category;
             product.discount = discount || product.discount;
+            console.log('product:', product);
 
             const updatedProduct = await product.save();
 
@@ -81,8 +83,8 @@ class ProductController {
 
     async Delete(req, res) {
         try {
-            const product = await Product.findById(req.params.id);
-            await product.remove();
+            const product = await Product.findByIdAndDelete(req.params.id);
+            // await product.remove();
             res.json({
                 message: 'Delete product successfully',
                 data: product,

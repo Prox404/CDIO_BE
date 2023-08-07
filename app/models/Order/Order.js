@@ -12,7 +12,7 @@ const OrderSchema = new Schema({
     address: { type: String, required: true},
     phone: { type: Number, required: true},
     total: { type: Number, required: true},
-    note: { type: String, required: true},
+    note: { type: String},
     orderDate: { type: Date, required: true},
     transportFee: { type: Number, default: 0},
 }, {

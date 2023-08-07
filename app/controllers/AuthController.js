@@ -5,7 +5,7 @@ const UserToken = require('../models/UserToken/UserToken');
 const jwt = require('jsonwebtoken');
 const { listenerCount } = require('../models/Cart/Cart');
 
-class UserController {
+class AuthController {
 
     async login(req, res) {
         const body = req.body;
@@ -24,7 +24,7 @@ class UserController {
             const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 });
             const refreshToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 * 24 * 365 });
             await new UserToken({ userId: user._id, token: refreshToken }).save();
-            const { password, role, ...data } = user._doc;
+            const { password, ...data } = user._doc;
             res.status(200).send({ data, accessToken, refreshToken });
         } catch (error) {
             console.error(error);
@@ -85,4 +85,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+module.exports = new AuthController();

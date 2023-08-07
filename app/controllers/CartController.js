@@ -34,21 +34,22 @@ class CartController {
                     user: userId,
                     products: [cartItem]
                 });
-            }  else {
+            } else {
                 // Nếu giỏ hàng đã tồn tại, kiểm tra nếu sản phẩm đã tồn tại trong giỏ hàng
                 const existingProduct = cart.products.find(item => item.product.toString() === productId);
-          
+
                 if (existingProduct) {
-                  // Nếu sản phẩm đã tồn tại trong giỏ hàng, cộng thêm số lượng
-                  existingProduct.quantity += parseInt(quantity);
+                    // Nếu sản phẩm đã tồn tại trong giỏ hàng, cộng thêm số lượng
+                    existingProduct.quantity += parseInt(quantity);
                 } else {
-                  // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới vào giỏ hàng
-                  cart.products.push({ product: productId, quantity: quantity });
+                    // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới vào giỏ hàng
+                    cart.products.push({ product: productId, quantity: quantity });
                 }
-              }
+            }
 
             // Lưu giỏ hàng được cập nhật vào cơ sở dữ liệu
             const newCart = await cart.save();
+            await newCart.populate('products.product');
 
             res.status(200).json({ message: 'Product added to cart successfully', data: newCart });
         } catch (error) {
@@ -59,11 +60,19 @@ class CartController {
 
     async ShowAll(req, res) {
         try {
-            const userId  = req.params.id;
+            const userId = req.params.id;
             console.log(userId);
-            const carts = await Cart.findOne({ user: userId }).populate('products.product');
-            carts.message = 'Get cart successfully';
-            res.status(200).json(carts);
+            let cart = await Cart.findOne({ user: userId }).populate('products.product');
+            const products = cart.products.map((item) => {
+                return {
+                    product: item.product,
+                    quantity: item.quantity,
+                };
+            });
+            const populatedProducts = await Product.populate(products, { path: 'product' });
+            cart.products = populatedProducts;
+            cart.message = 'Get cart successfully';
+            res.status(200).json(cart);
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
@@ -83,7 +92,7 @@ class CartController {
             const newCart = await cart.save();
 
             res.status(200).json({ message: 'Cart deleted successfully', data: newCart });
-        }catch (error) {
+        } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
